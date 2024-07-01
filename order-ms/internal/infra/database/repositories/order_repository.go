@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/paulozy/btg-challenge/order-ms/internal/entity"
@@ -44,18 +45,14 @@ func (r *OrderRepository) GetByClientCode(clientCode int) ([]entity.Order, error
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 
-	cur, err := r.collection.Find(
-		ctx,
-		bson.D{
-			{Key: "clientCode", Value: clientCode},
-		},
-	)
+	filter := bson.D{{Key: "clientCode", Value: clientCode}}
+	cur, err := r.collection.Find(ctx, filter)
 	if err != nil {
+		fmt.Println("porra", err)
 		return nil, err
 	}
 
 	defer cur.Close(ctx)
-
 	var orders []entity.Order
 
 	for cur.Next(ctx) {
@@ -63,6 +60,7 @@ func (r *OrderRepository) GetByClientCode(clientCode int) ([]entity.Order, error
 
 		err := cur.Decode(&order)
 		if err != nil {
+			fmt.Println("porra2", err)
 			return nil, err
 		}
 
