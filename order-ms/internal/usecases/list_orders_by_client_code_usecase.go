@@ -24,8 +24,6 @@ func NewListOrdersByClientCodeUseCase(repo database.OrderRepositoryInterface) *L
 
 func (useCase *ListOrdersByClientCodeUseCase) Execute(data ListOrdersByClientCodeInput) ([]entity.Order, pkg.Error) {
 
-	println("clientCode", data.ClientCode)
-
 	orders, err := useCase.OrderRepository.GetByClientCode(data.ClientCode)
 	if err != nil {
 		log.Fatalf("error: %s", err)
