@@ -27,7 +27,7 @@ func main() {
 	sqsService := services.NewSQSService(&awsService.Session, &configs.SQSCreatedOrdersQueueUrl)
 	go sqsService.ReadMessagesAndSaveOrder(mongoClient)
 
-	// server.PopulateRoutes(mongoClient)
+	server.PopulateRoutes(mongoClient)
 
 	server := server.NewServer(configs.WebHost, configs.WebPort, configs.Env)
 	server.AddHandlers()
