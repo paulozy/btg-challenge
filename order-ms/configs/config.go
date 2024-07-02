@@ -14,6 +14,7 @@ type config struct {
 	WebPort                  string `mapstructure:"WEB_PORT"`
 	WebHost                  string `mapstructure:"WEB_HOST"`
 	Env                      string `mapstructure:"ENV"`
+	DatabaseName             string `mapstructure:"DATABASE_NAME"`
 }
 
 func LoadConfig(path string) (*config, error) {
