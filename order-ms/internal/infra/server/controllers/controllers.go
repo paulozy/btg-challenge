@@ -4,23 +4,23 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/paulozy/btg-challenge/order-ms/internal/infra/database"
 	"github.com/paulozy/btg-challenge/order-ms/internal/usecases"
 )
 
 type OrderController struct {
-	orderRepository               database.OrderRepositoryInterface
 	listOrdersByClientCodeUseCase *usecases.ListOrdersByClientCodeUseCase
+	showOrderByOrderCodeUseCase   *usecases.ShowOrderByOrderCodeUseCase
 }
 
 type OrderUseCasesInput struct {
 	ListOrdersByClientCodeUseCase *usecases.ListOrdersByClientCodeUseCase
+	ShowOrderByOrderCodeUseCase   *usecases.ShowOrderByOrderCodeUseCase
 }
 
-func NewOrderController(or database.OrderRepositoryInterface, usecases OrderUseCasesInput) *OrderController {
+func NewOrderController(usecases OrderUseCasesInput) *OrderController {
 	return &OrderController{
-		orderRepository:               or,
 		listOrdersByClientCodeUseCase: usecases.ListOrdersByClientCodeUseCase,
+		showOrderByOrderCodeUseCase:   usecases.ShowOrderByOrderCodeUseCase,
 	}
 }
 
@@ -48,4 +48,30 @@ func (oc *OrderController) ListByClientCode(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{"count": len(orders), "rows": orders})
+}
+
+func (oc *OrderController) GetOrderByOrderCode(c *gin.Context) {
+	orderCode := c.Param("orderCode")
+	if orderCode == "" {
+		c.JSON(400, gin.H{"error": "missing param", "reason": "missing orderCode param"})
+		return
+	}
+
+	normalizedOrderCode, err := strconv.Atoi(orderCode)
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error(), "reason": err})
+		return
+	}
+
+	input := usecases.ShowOrderByOrderCodeInput{
+		OrderCode: normalizedOrderCode,
+	}
+
+	order, ucError := oc.showOrderByOrderCodeUseCase.Execute(input)
+	if ucError.Message != "" {
+		c.JSON(ucError.Status, gin.H{"error": ucError.Message, "reason": ucError.Error})
+		return
+	}
+
+	c.JSON(200, gin.H{"data": order})
 }
