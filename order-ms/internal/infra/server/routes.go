@@ -7,15 +7,17 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+const COLLECTION_NAME string = "orders"
+
 var Routes = []Handler{}
 
-func PopulateRoutes(mongoClient *mongo.Client) []Handler {
-	addOrderRoutes(mongoClient)
+func PopulateRoutes(mongoClient *mongo.Client, databaseName string) []Handler {
+	addOrderRoutes(mongoClient, databaseName)
 	return Routes
 }
 
-func addOrderRoutes(mongoClient *mongo.Client) {
-	orderRepository := repositories.NewOrderRepository(mongoClient, "btg_challenges", "orders")
+func addOrderRoutes(mongoClient *mongo.Client, databaseName string) {
+	orderRepository := repositories.NewOrderRepository(mongoClient, databaseName, COLLECTION_NAME)
 	listOrdersByClientCodeUseCase := usecases.NewListOrdersByClientCodeUseCase(orderRepository)
 	showOrderByOrderCodeUseCase := usecases.NewShowOrderByOrderCodeUseCase(orderRepository)
 
