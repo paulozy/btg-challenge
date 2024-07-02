@@ -71,17 +71,12 @@ func (r *OrderRepository) GetByClientCode(clientCode int) ([]entity.Order, error
 	return orders, nil
 }
 
-func (r *OrderRepository) FindByOrderCode(clientCode, orderCode int) (*entity.Order, error) {
+func (r *OrderRepository) FindByOrderCode(orderCode int) (*entity.Order, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 
-	res := r.collection.FindOne(
-		ctx,
-		bson.D{
-			{Key: "clientCode", Value: clientCode},
-			{Key: "orderCode", Value: orderCode},
-		},
-	)
+	filter := bson.D{{Key: "orderCode", Value: orderCode}}
+	res := r.collection.FindOne(ctx, filter)
 
 	var order *entity.Order
 
