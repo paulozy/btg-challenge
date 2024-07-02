@@ -17,18 +17,25 @@ func PopulateRoutes(mongoClient *mongo.Client) []Handler {
 func addOrderRoutes(mongoClient *mongo.Client) {
 	orderRepository := repositories.NewOrderRepository(mongoClient, "btg_challenges", "orders")
 	listOrdersByClientCodeUseCase := usecases.NewListOrdersByClientCodeUseCase(orderRepository)
+	showOrderByOrderCodeUseCase := usecases.NewShowOrderByOrderCodeUseCase(orderRepository)
 
 	orderUseCases := controllers.OrderUseCasesInput{
 		ListOrdersByClientCodeUseCase: listOrdersByClientCodeUseCase,
+		ShowOrderByOrderCodeUseCase:   showOrderByOrderCodeUseCase,
 	}
 
-	orderController := controllers.NewOrderController(orderRepository, orderUseCases)
+	orderController := controllers.NewOrderController(orderUseCases)
 
 	orderControllerRoutes := []Handler{
 		{
 			Path:   "/orders",
 			Method: "GET",
 			Func:   orderController.ListByClientCode,
+		},
+		{
+			Path:   "/orders/:orderCode",
+			Method: "GET",
+			Func:   orderController.GetOrderByOrderCode,
 		},
 	}
 
