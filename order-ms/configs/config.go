@@ -15,6 +15,7 @@ type config struct {
 	WebHost                  string `mapstructure:"WEB_HOST"`
 	Env                      string `mapstructure:"ENV"`
 	DatabaseName             string `mapstructure:"DATABASE_NAME"`
+	HeaderKey                string `mapstructure:"HEADER_KEY"`
 }
 
 func LoadConfig(path string) (*config, error) {
