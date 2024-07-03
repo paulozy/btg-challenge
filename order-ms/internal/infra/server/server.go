@@ -3,6 +3,7 @@ package server
 import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/paulozy/btg-challenge/order-ms/internal/infra/server/middlewares"
 )
 
 type Handler struct {
@@ -43,6 +44,7 @@ func (s *Server) Start() {
 	config.ExposeHeaders = []string{"Content-Length"}
 
 	s.Router.Use(cors.New(config))
+	s.Router.Use(middlewares.EnsureAllowedToRequestMiddleware())
 
 	for _, h := range s.Handlers {
 		s.Router.Handle(h.Method, h.Path, h.Func)
